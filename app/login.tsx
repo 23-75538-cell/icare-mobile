@@ -8,16 +8,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
-import { PrimaryButton, FormInput } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import logoImg from '@/assets/images/logo-no-bg.png';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const { login, isLoading } = useAuth();
   const router = useRouter();
 
@@ -36,9 +38,10 @@ export default function LoginScreen() {
     }
   };
 
+  const primaryColor = Colors.light.primary;
+
   return (
     <View style={styles.container}>
-      <View style={styles.gradient} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -46,53 +49,76 @@ export default function LoginScreen() {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>iCARE++</Text>
+          <View style={styles.headerSection}>
+            <View style={[styles.logoCircle, { borderColor: primaryColor + '30' }]}>
+              <Image source={logoImg} style={styles.logoImage} />
             </View>
-            <Text style={styles.tagline}>
-              Clinical Competency Assessment
-            </Text>
+            <Text style={[styles.appName, { color: primaryColor }]}>iCARE++</Text>
+            <Text style={styles.tagline}>Clinical Competency Assessment</Text>
           </View>
 
-          <View style={styles.form}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>
-              Sign in to continue your learning journey
-            </Text>
+          <View style={styles.contentSection}>
+            <Text style={styles.welcomeText}>Welcome Back</Text>
+            <Text style={styles.subtitleText}>Sign in to continue</Text>
 
-            <FormInput
-              label="Email"
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              leftIcon="📧"
-            />
+            <View style={styles.formSection}>
+              <View style={[
+                styles.inputWrapper,
+                focusedField === 'email' && { borderColor: primaryColor }
+              ]}>
+                <Text style={[styles.inputLabel, { color: primaryColor }]}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="email@example.com"
+                  placeholderTextColor="#94a3b8"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </View>
 
-            <FormInput
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              leftIcon="🔒"
-            />
+              <View style={[
+                styles.inputWrapper,
+                focusedField === 'password' && { borderColor: primaryColor }
+              ]}>
+                <Text style={[styles.inputLabel, { color: primaryColor }]}>Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="••••••••"
+                  placeholderTextColor="#94a3b8"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </View>
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
+              {error ? (
+                <Text style={styles.errorText}>{error}</Text>
+              ) : null}
 
-            <PrimaryButton
-              title="Sign In"
-              onPress={handleLogin}
-              loading={isLoading}
-              style={styles.button}
-            />
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: primaryColor }]}
+                onPress={handleLogin}
+                disabled={isLoading}
+              >
+                <Text style={styles.buttonText}>
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotText}>Forgot Password?</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.forgotButton}>
+                <Text style={[styles.forgotText, { color: primaryColor }]}>
+                  Forgot Password?
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.footer}>
@@ -111,92 +137,116 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  gradient: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.light.primary,
-  },
   keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingHorizontal: 32,
+    paddingTop: 80,
+    paddingBottom: 40,
   },
-  logoContainer: {
+  headerSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 48,
   },
   logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  logoText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.light.primary,
-  },
-  tagline: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 12,
-    textAlign: 'center',
-  },
-  form: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    padding: 24,
+    borderWidth: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
+    marginBottom: 16,
   },
-  title: {
+  logoImage: {
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
+  },
+  appName: {
     fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 12,
+    color: '#94a3b8',
+    letterSpacing: 0.5,
+  },
+  contentSection: {
+    flex: 1,
+  },
+  welcomeText: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#0f172a',
+    letterSpacing: -0.5,
+    marginBottom: 4,
+  },
+  subtitleText: {
+    fontSize: 16,
+    color: '#64748b',
+    marginBottom: 32,
+  },
+  formSection: {
+    gap: 16,
+  },
+  inputWrapper: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#e2e8f0',
+    paddingBottom: 8,
+  },
+  inputLabel: {
+    fontSize: 12,
     fontWeight: '700',
-    color: '#11181c',
-    marginBottom: 8,
+    letterSpacing: 0.5,
+    marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 24,
+  input: {
+    fontSize: 18,
+    color: '#1e293b',
+    paddingVertical: 8,
   },
-  error: {
+  errorText: {
     color: '#dc2626',
     fontSize: 14,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontWeight: '600',
   },
   button: {
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  forgotPassword: {
+    borderRadius: 12,
+    paddingVertical: 18,
     alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  forgotButton: {
+    alignItems: 'center',
+    paddingVertical: 12,
   },
   forgotText: {
-    color: Colors.light.primary,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   footer: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: 48,
   },
   footerText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.6)',
+    fontSize: 11,
+    color: '#cbd5e1',
+    letterSpacing: 0.3,
   },
 });

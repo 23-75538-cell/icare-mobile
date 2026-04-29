@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TextInputProps } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TextInputProps, Image } from 'react-native';
 import { Colors } from '@/constants/theme';
 
 interface FormInputProps extends TextInputProps {
@@ -7,6 +7,8 @@ interface FormInputProps extends TextInputProps {
   error?: string;
   leftIcon?: string;
   rightIcon?: string;
+  leftIconImage?: number;
+  rightIconImage?: number;
 }
 
 export function FormInput({
@@ -14,6 +16,8 @@ export function FormInput({
   error,
   leftIcon,
   rightIcon,
+  leftIconImage,
+  rightIconImage,
   style,
   ...props
 }: FormInputProps) {
@@ -22,12 +26,14 @@ export function FormInput({
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputContainer, error ? styles.inputError : null]}>
         {leftIcon && <Text style={styles.leftIcon}>{leftIcon}</Text>}
+        {leftIconImage && <Image source={leftIconImage} style={styles.leftIconImage} />}
         <TextInput
           style={[styles.input, style]}
           placeholderTextColor="#9ca3af"
           {...props}
         />
         {rightIcon && <Text style={styles.rightIcon}>{rightIcon}</Text>}
+        {rightIconImage && <Image source={rightIconImage} style={styles.rightIconImage} />}
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -66,9 +72,21 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     fontSize: 18,
   },
+  leftIconImage: {
+    width: 20,
+    height: 20,
+    marginLeft: 12,
+    resizeMode: 'contain',
+  },
   rightIcon: {
     paddingRight: 12,
     fontSize: 18,
+  },
+  rightIconImage: {
+    width: 20,
+    height: 20,
+    marginRight: 12,
+    resizeMode: 'contain',
   },
   errorText: {
     fontSize: 12,
