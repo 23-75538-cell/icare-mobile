@@ -3,7 +3,6 @@ import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'rea
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
-import { Card } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { mockPerformanceLogs, mockAIRecommendations } from '@/lib/api';
 
